@@ -1,18 +1,9 @@
-
-locals {
- lambda_zip_path = "${path.root}/../backend/lambdas/uploadHandler/lambda.zip"
+data "archive_file" "upload_handler_zip" {
+  type        = "zip"
+  source_dir  = "${path.root}/../backend/lambdas/UploadHandler"
+  output_path = "${path.root}/build/upload-handler.zip"
 }
 
-resource "aws_lambda_function" "api_test" {
-  function_name = "${var.project_name}-test"
-
-  role    = aws_iam_role.lambda_role.arn
-  handler = "index.handler"
-  runtime = "nodejs18.x"
-
-  filename         = local.lambda_zip_path
-source_code_hash = filebase64sha256(local.lambda_zip_path)
-}
 resource "aws_iam_role" "lambda_role" {
   name = "${var.project_name}-lambda-role"
 
@@ -27,19 +18,31 @@ resource "aws_iam_role" "lambda_role" {
     }]
   })
 }
+
+resource "aws_iam_role_policy_attachment" "lambda_basic" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_lambda_function" "api_test" {
+  function_name = "${var.project_name}-test"
+
+  role    = aws_iam_role.lambda_role.arn
+  handler = "index.handler"
+  runtime = "nodejs18.x"
+
+  filename         = data.archive_file.upload_handler_zip.output_path
+  source_code_hash = data.archive_file.upload_handler_zip.output_base64sha256
+}
+
 data "aws_caller_identity" "current" {}
+
 resource "aws_lambda_permission" "apigw" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.api_test.function_name
   principal     = "apigateway.amazonaws.com"
-
-  # IMPORTANT: allows API Gateway to call Lambda
-source_arn = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:*/*/*/*"
-}
-resource "aws_iam_role_policy_attachment" "lambda_basic" {
-  role       = aws_iam_role.lambda_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  source_arn    = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:*/*/*/*"
 }
 
 output "lambda_invoke_arn" {

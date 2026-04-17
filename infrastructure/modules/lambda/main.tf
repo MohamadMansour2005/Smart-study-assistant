@@ -1,11 +1,11 @@
-data "archive_file" "upload_handler_zip" {
+data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_dir  = "${path.root}/../backend/lambdas/UploadHandler"
-  output_path = "${path.root}/build/upload-handler.zip"
+  source_dir  = var.lambda_source_dir
+  output_path = "${path.root}/build/${var.function_name}.zip"
 }
 
 resource "aws_iam_role" "lambda_role" {
-  name = "${var.project_name}-lambda-role"
+  name = "${var.function_name}-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -24,15 +24,40 @@ resource "aws_iam_role_policy_attachment" "lambda_basic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-resource "aws_lambda_function" "api_test" {
-  function_name = "${var.project_name}-test"
+resource "aws_iam_role_policy" "s3_access" {
+  count = var.s3_bucket_arn != "" ? 1 : 0
+
+  name = "${var.function_name}-s3-policy"
+  role = aws_iam_role.lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject"
+        ],
+        Resource = "${var.s3_bucket_arn}/*"
+      }
+    ]
+  })
+}
+
+resource "aws_lambda_function" "this" {
+  function_name = var.function_name
 
   role    = aws_iam_role.lambda_role.arn
   handler = "index.handler"
-  runtime = "nodejs18.x"
+  runtime = "nodejs16.x"
 
-  filename         = data.archive_file.upload_handler_zip.output_path
-  source_code_hash = data.archive_file.upload_handler_zip.output_base64sha256
+  filename         = data.archive_file.lambda_zip.output_path
+  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+
+  environment {
+    variables = var.environment_variables
+  }
 }
 
 data "aws_caller_identity" "current" {}
@@ -40,15 +65,15 @@ data "aws_caller_identity" "current" {}
 resource "aws_lambda_permission" "apigw" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.api_test.function_name
+  function_name = aws_lambda_function.this.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:*/*/*/*"
 }
 
 output "lambda_invoke_arn" {
-  value = aws_lambda_function.api_test.invoke_arn
+  value = aws_lambda_function.this.invoke_arn
 }
 
 output "lambda_name" {
-  value = aws_lambda_function.api_test.function_name
+  value = aws_lambda_function.this.function_name
 }

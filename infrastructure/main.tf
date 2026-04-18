@@ -18,6 +18,7 @@ module "api_gateway" {
   lambda_invoke_arn         = module.lambda.lambda_invoke_arn
   upload_lambda_invoke_arn  = module.get_upload_url_lambda.lambda_invoke_arn
   process_lambda_invoke_arn = module.process_document_lambda.lambda_invoke_arn
+  results_lambda_invoke_arn = module.get_results_lambda.lambda_invoke_arn
 }
 data "aws_caller_identity" "current" {}
 
@@ -50,4 +51,15 @@ module "process_document_lambda" {
 
   environment_variables = {}
   s3_bucket_arn         = module.s3.bucket_arn
+}
+module "get_results_lambda" {
+  source       = "./modules/lambda"
+  project_name = "${var.project_name}-get-results"
+  region       = var.region
+
+  lambda_source_dir = "${path.root}/../backend/lambdas/getResults"
+  function_name     = "${var.project_name}-get-results"
+
+  environment_variables = {}
+  s3_bucket_arn         = ""
 }

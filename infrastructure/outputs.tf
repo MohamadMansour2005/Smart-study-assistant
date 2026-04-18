@@ -12,3 +12,6 @@ output "upload_url_endpoint" {
 output "process_document_url" {
   value = module.api_gateway.process_document_url
 }
+output "results_url" {
+  value = module.api_gateway.results_url
+}

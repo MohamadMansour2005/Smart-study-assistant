@@ -44,6 +44,24 @@ resource "aws_iam_role_policy" "s3_access" {
     ]
   })
 }
+resource "aws_iam_role_policy" "textract_access" {
+  name = "${var.function_name}-textract-policy"
+  role = aws_iam_role.lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "textract:StartDocumentAnalysis",
+          "textract:GetDocumentAnalysis"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
 
 resource "aws_lambda_function" "this" {
   function_name = var.function_name

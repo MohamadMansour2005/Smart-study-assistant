@@ -21,3 +21,7 @@ variable "process_lambda_invoke_arn" {
   description = "Invoke ARN for the process-document lambda"
   type        = string
 }
+variable "results_lambda_invoke_arn" {
+  description = "Invoke ARN for the get-results lambda"
+  type        = string
+}

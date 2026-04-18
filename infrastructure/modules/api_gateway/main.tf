@@ -87,7 +87,8 @@ resource "aws_api_gateway_deployment" "deploy" {
   depends_on = [
     aws_api_gateway_integration.test_lambda_integration,
     aws_api_gateway_integration.upload_lambda_integration,
-    aws_api_gateway_integration.process_lambda_integration
+    aws_api_gateway_integration.process_lambda_integration,
+    aws_api_gateway_integration.results_lambda_integration
   ]
 
   rest_api_id = aws_api_gateway_rest_api.api.id
@@ -103,6 +104,9 @@ resource "aws_api_gateway_deployment" "deploy" {
       process_resource_id    = aws_api_gateway_resource.process_document.id
       process_method_id      = aws_api_gateway_method.process_document_post.id
       process_integration_id = aws_api_gateway_integration.process_lambda_integration.id
+      results_resource_id    = aws_api_gateway_resource.results.id
+      results_method_id      = aws_api_gateway_method.results_get.id
+      results_integration_id = aws_api_gateway_integration.results_lambda_integration.id
     }))
   }
 
@@ -131,4 +135,33 @@ output "upload_url_endpoint" {
 
 output "process_document_url" {
   value = "https://${aws_api_gateway_rest_api.api.id}.execute-api.${var.region}.amazonaws.com/dev/process-document"
+}
+# ----------------------
+# /results
+# ----------------------
+resource "aws_api_gateway_resource" "results" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
+  path_part   = "results"
+}
+
+resource "aws_api_gateway_method" "results_get" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.results.id
+  http_method   = "GET"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "results_lambda_integration" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.results.id
+  http_method = aws_api_gateway_method.results_get.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+
+  uri = var.results_lambda_invoke_arn
+}
+output "results_url" {
+  value = "https://${aws_api_gateway_rest_api.api.id}.execute-api.${var.region}.amazonaws.com/dev/results"
 }

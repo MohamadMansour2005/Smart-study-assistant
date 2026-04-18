@@ -25,3 +25,7 @@ variable "results_lambda_invoke_arn" {
   description = "Invoke ARN for the get-results lambda"
   type        = string
 }
+variable "summarize_lambda_invoke_arn" {
+  description = "Invoke ARN for the summarize-document lambda"
+  type        = string
+}

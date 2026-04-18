@@ -88,25 +88,28 @@ resource "aws_api_gateway_deployment" "deploy" {
     aws_api_gateway_integration.test_lambda_integration,
     aws_api_gateway_integration.upload_lambda_integration,
     aws_api_gateway_integration.process_lambda_integration,
-    aws_api_gateway_integration.results_lambda_integration
+    aws_api_gateway_integration.results_lambda_integration,
+    aws_api_gateway_integration.summarize_lambda_integration
   ]
-
   rest_api_id = aws_api_gateway_rest_api.api.id
 
   triggers = {
     redeployment = sha1(jsonencode({
-      test_resource_id       = aws_api_gateway_resource.test.id
-      test_method_id         = aws_api_gateway_method.test_get.id
-      test_integration_id    = aws_api_gateway_integration.test_lambda_integration.id
-      upload_resource_id     = aws_api_gateway_resource.upload_url.id
-      upload_method_id       = aws_api_gateway_method.upload_url_get.id
-      upload_integration_id  = aws_api_gateway_integration.upload_lambda_integration.id
-      process_resource_id    = aws_api_gateway_resource.process_document.id
-      process_method_id      = aws_api_gateway_method.process_document_post.id
-      process_integration_id = aws_api_gateway_integration.process_lambda_integration.id
-      results_resource_id    = aws_api_gateway_resource.results.id
-      results_method_id      = aws_api_gateway_method.results_get.id
-      results_integration_id = aws_api_gateway_integration.results_lambda_integration.id
+      test_resource_id         = aws_api_gateway_resource.test.id
+      test_method_id           = aws_api_gateway_method.test_get.id
+      test_integration_id      = aws_api_gateway_integration.test_lambda_integration.id
+      upload_resource_id       = aws_api_gateway_resource.upload_url.id
+      upload_method_id         = aws_api_gateway_method.upload_url_get.id
+      upload_integration_id    = aws_api_gateway_integration.upload_lambda_integration.id
+      process_resource_id      = aws_api_gateway_resource.process_document.id
+      process_method_id        = aws_api_gateway_method.process_document_post.id
+      process_integration_id   = aws_api_gateway_integration.process_lambda_integration.id
+      results_resource_id      = aws_api_gateway_resource.results.id
+      results_method_id        = aws_api_gateway_method.results_get.id
+      results_integration_id   = aws_api_gateway_integration.results_lambda_integration.id
+      summarize_resource_id    = aws_api_gateway_resource.summarize.id
+      summarize_method_id      = aws_api_gateway_method.summarize_post.id
+      summarize_integration_id = aws_api_gateway_integration.summarize_lambda_integration.id
     }))
   }
 
@@ -164,4 +167,33 @@ resource "aws_api_gateway_integration" "results_lambda_integration" {
 }
 output "results_url" {
   value = "https://${aws_api_gateway_rest_api.api.id}.execute-api.${var.region}.amazonaws.com/dev/results"
+}
+# ----------------------
+# /summarize
+# ----------------------
+resource "aws_api_gateway_resource" "summarize" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
+  path_part   = "summarize"
+}
+
+resource "aws_api_gateway_method" "summarize_post" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.summarize.id
+  http_method   = "POST"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "summarize_lambda_integration" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.summarize.id
+  http_method = aws_api_gateway_method.summarize_post.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+
+  uri = var.summarize_lambda_invoke_arn
+}
+output "summarize_url" {
+  value = "https://${aws_api_gateway_rest_api.api.id}.execute-api.${var.region}.amazonaws.com/dev/summarize"
 }

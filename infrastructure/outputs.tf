@@ -15,3 +15,6 @@ output "process_document_url" {
 output "results_url" {
   value = module.api_gateway.results_url
 }
+output "summarize_url" {
+  value = module.api_gateway.summarize_url
+}

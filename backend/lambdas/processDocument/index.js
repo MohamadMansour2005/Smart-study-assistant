@@ -1,7 +1,10 @@
+const AWS = require("aws-sdk");
+
+const textract = new AWS.Textract();
+
 exports.handler = async (event) => {
   try {
     const body = event.body ? JSON.parse(event.body) : {};
-
     const { fileKey, bucketName } = body;
 
     if (!fileKey || !bucketName) {
@@ -17,6 +20,18 @@ exports.handler = async (event) => {
       };
     }
 
+    const params = {
+      DocumentLocation: {
+        S3Object: {
+          Bucket: bucketName,
+          Name: fileKey,
+        },
+      },
+      FeatureTypes: ["FORMS", "TABLES"],
+    };
+
+    const result = await textract.startDocumentAnalysis(params).promise();
+
     return {
       statusCode: 200,
       headers: {
@@ -24,7 +39,8 @@ exports.handler = async (event) => {
         "Access-Control-Allow-Origin": "*",
       },
       body: JSON.stringify({
-        message: "Document processing started",
+        message: "Textract analysis started",
+        jobId: result.JobId,
         fileKey,
         bucketName,
       }),
@@ -37,7 +53,7 @@ exports.handler = async (event) => {
         "Access-Control-Allow-Origin": "*",
       },
       body: JSON.stringify({
-        error: "Failed to process request",
+        error: "Failed to start Textract analysis",
         details: error.message,
       }),
     };

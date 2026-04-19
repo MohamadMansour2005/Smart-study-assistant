@@ -86,12 +86,32 @@ resource "aws_iam_role_policy" "bedrock_access" {
   })
 }
 
+resource "aws_iam_role_policy" "lambda_invoke_access" {
+  count = var.invoke_lambda_name != "" ? 1 : 0
+
+  name = "${var.function_name}-invoke-lambda-policy"
+  role = aws_iam_role.lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "lambda:InvokeFunction"
+        ],
+        Resource = "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function:${var.invoke_lambda_name}"
+      }
+    ]
+  })
+}
 resource "aws_lambda_function" "this" {
   function_name = var.function_name
 
   role    = aws_iam_role.lambda_role.arn
   handler = "index.handler"
   runtime = "nodejs16.x"
+  timeout = 30
 
   filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256

@@ -1,5 +1,5 @@
 variable "project_name" {
-  description = "Project name"
+  description = "Project name prefix"
   type        = string
 }
 
@@ -9,7 +9,7 @@ variable "region" {
 }
 
 variable "lambda_source_dir" {
-  description = "Path to lambda source directory"
+  description = "Path to Lambda source code"
   type        = string
 }
 
@@ -19,13 +19,19 @@ variable "function_name" {
 }
 
 variable "environment_variables" {
-  description = "Lambda environment variables"
+  description = "Environment variables for the Lambda"
   type        = map(string)
   default     = {}
 }
 
 variable "s3_bucket_arn" {
-  description = "Optional S3 bucket ARN for lambda access"
+  description = "Optional S3 bucket ARN for Lambda access"
+  type        = string
+  default     = ""
+}
+
+variable "invoke_lambda_name" {
+  description = "Optional Lambda function name this Lambda can invoke"
   type        = string
   default     = ""
 }

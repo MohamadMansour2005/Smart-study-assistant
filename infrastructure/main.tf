@@ -1,4 +1,3 @@
-
 module "lambda" {
   source       = "./modules/lambda"
   project_name = var.project_name
@@ -9,7 +8,9 @@ module "lambda" {
 
   environment_variables = {}
   s3_bucket_arn         = ""
+  invoke_lambda_name    = ""
 }
+
 module "api_gateway" {
   source = "./modules/api_gateway"
 
@@ -29,6 +30,7 @@ module "s3" {
   project_name = var.project_name
   account_id   = data.aws_caller_identity.current.account_id
 }
+
 module "get_upload_url_lambda" {
   source       = "./modules/lambda"
   project_name = "${var.project_name}-get-upload-url"
@@ -41,8 +43,10 @@ module "get_upload_url_lambda" {
     UPLOADS_BUCKET_NAME = module.s3.bucket_name
   }
 
-  s3_bucket_arn = module.s3.bucket_arn
+  s3_bucket_arn      = module.s3.bucket_arn
+  invoke_lambda_name = ""
 }
+
 module "process_document_lambda" {
   source       = "./modules/lambda"
   project_name = "${var.project_name}-process-document"
@@ -53,18 +57,9 @@ module "process_document_lambda" {
 
   environment_variables = {}
   s3_bucket_arn         = module.s3.bucket_arn
+  invoke_lambda_name    = ""
 }
-module "get_results_lambda" {
-  source       = "./modules/lambda"
-  project_name = "${var.project_name}-get-results"
-  region       = var.region
 
-  lambda_source_dir = "${path.root}/../backend/lambdas/getResults"
-  function_name     = "${var.project_name}-get-results"
-
-  environment_variables = {}
-  s3_bucket_arn         = ""
-}
 module "summarize_document_lambda" {
   source       = "./modules/lambda"
   project_name = "${var.project_name}-summarize-document"
@@ -75,4 +70,21 @@ module "summarize_document_lambda" {
 
   environment_variables = {}
   s3_bucket_arn         = ""
+  invoke_lambda_name    = ""
+}
+
+module "get_results_lambda" {
+  source       = "./modules/lambda"
+  project_name = "${var.project_name}-get-results"
+  region       = var.region
+
+  lambda_source_dir = "${path.root}/../backend/lambdas/getResults"
+  function_name     = "${var.project_name}-get-results"
+
+  environment_variables = {
+    SUMMARIZE_FUNCTION_NAME = module.summarize_document_lambda.lambda_name
+  }
+
+  s3_bucket_arn      = ""
+  invoke_lambda_name = module.summarize_document_lambda.lambda_name
 }

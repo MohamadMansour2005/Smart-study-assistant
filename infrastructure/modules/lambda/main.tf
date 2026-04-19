@@ -9,13 +9,15 @@ resource "aws_iam_role" "lambda_role" {
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
-    Statement = [{
-      Action = "sts:AssumeRole",
-      Effect = "Allow",
-      Principal = {
-        Service = "lambda.amazonaws.com"
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
       }
-    }]
+    ]
   })
 }
 
@@ -44,6 +46,7 @@ resource "aws_iam_role_policy" "s3_access" {
     ]
   })
 }
+
 resource "aws_iam_role_policy" "textract_access" {
   name = "${var.function_name}-textract-policy"
   role = aws_iam_role.lambda_role.id
@@ -58,6 +61,26 @@ resource "aws_iam_role_policy" "textract_access" {
           "textract:GetDocumentAnalysis"
         ],
         Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "bedrock_access" {
+  name = "${var.function_name}-bedrock-policy"
+  role = aws_iam_role.lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "bedrock:InvokeModel"
+        ],
+        Resource = [
+          "arn:aws:bedrock:${var.region}::foundation-model/amazon.nova-micro-v1:0"
+        ]
       }
     ]
   })

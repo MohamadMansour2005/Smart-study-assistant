@@ -46,8 +46,15 @@ exports.handler = async (event) => {
     const lines = blocks
       .filter(block => block.BlockType === "LINE" && block.Text)
       .map(block => block.Text);
+let text = lines.join("\n");
 
-    const text = lines.join("\n");
+// Light OCR cleanup
+text = text
+  .replace(/[ÂâË¢»¶´¸¹°]+/g, "")          // remove common OCR junk symbols
+  .replace(/[ \t]+/g, " ")               // normalize repeated spaces
+  .replace(/\n\s*\n\s*\n+/g, "\n\n")     // collapse too many blank lines
+  .replace(/ +\n/g, "\n")                // remove spaces before line breaks
+  .trim();
 
     let summary = null;
     let summarizeResponse = null;
@@ -72,21 +79,18 @@ exports.handler = async (event) => {
         summary = "No body returned from summarize lambda";
       }
     }
-
-    return {
-      statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      },
-      body: JSON.stringify({
-        status,
-        text,
-        summary,
-        summarizeFunctionName: process.env.SUMMARIZE_FUNCTION_NAME || null,
-        rawSummarizePayload: summarizeResponse ? summarizeResponse.Payload : null
-      })
-    };
+return {
+  statusCode: 200,
+  headers: {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*"
+  },
+  body: JSON.stringify({
+    status,
+    text,
+    summary
+  })
+};
 
   } catch (error) {
     return {

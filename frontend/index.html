@@ -1,1 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Study Assistant - Home</title>
+  <link rel="stylesheet" href="./style.css" />
 
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)'], ['$', '$']],
+        displayMath: [['\\[', '\\]'], ['$$', '$$']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+<nav class="navbar">
+  <a href="./index.html" class="nav-brand">
+    Smart Study Assistant
+  </a>
+
+  <div class="nav-links">
+    <a href="./ai.html">AI Assistance</a>
+    <a href="./flashcards.html">Flashcards</a>
+    <a href="./quizzes.html">Mini Quizzes</a>
+  </div>
+</nav>
+  <div class="container">
+    <header class="hero">
+      <h1>Smart Study Assistant</h1>
+      <p>Upload a lecture PDF and get extracted text plus AI-generated study notes.</p>
+    </header>
+
+    <main class="grid">
+      <section class="card">
+        <h2>Upload PDF</h2>
+        <label for="pdfFile" class="label">Choose a PDF file</label>
+        <input id="pdfFile" type="file" accept="application/pdf" />
+
+        <button id="processBtn" class="btn">Process PDF</button>
+
+        <div class="status-row">
+          <div id="spinner" class="spinner hidden"></div>
+          <p id="status" class="status">Waiting for file...</p>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Study Notes</h2>
+        <div id="summaryOutput" class="output markdown-output">
+          AI-generated study notes will appear here.
+        </div>
+      </section>
+
+      <section class="card full-width">
+        <div class="section-header">
+          <h2>Extracted Text</h2>
+          <button id="toggleTextBtn" class="toggle-btn">Show Extracted Text</button>
+        </div>
+
+        <div id="textContainer" class="collapsed">
+          <div id="textOutput" class="output">
+            OCR extracted text will appear here.
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

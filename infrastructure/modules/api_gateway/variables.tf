@@ -29,3 +29,11 @@ variable "summarize_lambda_invoke_arn" {
   description = "Invoke ARN for the summarize-document lambda"
   type        = string
 }
+variable "flashcards_lambda_invoke_arn" {
+  description = "Invoke ARN for the flashcards lambda"
+  type        = string
+}
+variable "quiz_lambda_invoke_arn" {
+  description = "Invoke ARN for the quiz lambda"
+  type        = string
+}

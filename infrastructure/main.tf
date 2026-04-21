@@ -14,15 +14,16 @@ module "lambda" {
 module "api_gateway" {
   source = "./modules/api_gateway"
 
-  project_name                = var.project_name
-  region                      = var.region
-  lambda_invoke_arn           = module.lambda.lambda_invoke_arn
-  upload_lambda_invoke_arn    = module.get_upload_url_lambda.lambda_invoke_arn
-  process_lambda_invoke_arn   = module.process_document_lambda.lambda_invoke_arn
-  results_lambda_invoke_arn   = module.get_results_lambda.lambda_invoke_arn
-  summarize_lambda_invoke_arn = module.summarize_document_lambda.lambda_invoke_arn
+  project_name                 = var.project_name
+  region                       = var.region
+  lambda_invoke_arn            = module.lambda.lambda_invoke_arn
+  upload_lambda_invoke_arn     = module.get_upload_url_lambda.lambda_invoke_arn
+  process_lambda_invoke_arn    = module.process_document_lambda.lambda_invoke_arn
+  results_lambda_invoke_arn    = module.get_results_lambda.lambda_invoke_arn
+  summarize_lambda_invoke_arn  = module.summarize_document_lambda.lambda_invoke_arn
+  flashcards_lambda_invoke_arn = module.generate_flashcards_lambda.lambda_invoke_arn
+  quiz_lambda_invoke_arn       = module.generate_quiz_lambda.lambda_invoke_arn
 }
-
 data "aws_caller_identity" "current" {}
 
 module "s3" {
@@ -87,4 +88,28 @@ module "get_results_lambda" {
 
   s3_bucket_arn      = ""
   invoke_lambda_name = module.summarize_document_lambda.lambda_name
+}
+module "generate_flashcards_lambda" {
+  source       = "./modules/lambda"
+  project_name = "${var.project_name}-generate-flashcards"
+  region       = var.region
+
+  lambda_source_dir = "${path.root}/../backend/lambdas/generateFlashcards"
+  function_name     = "${var.project_name}-generate-flashcards"
+
+  environment_variables = {}
+  s3_bucket_arn         = ""
+  invoke_lambda_name    = ""
+}
+module "generate_quiz_lambda" {
+  source       = "./modules/lambda"
+  project_name = "${var.project_name}-generate-quiz"
+  region       = var.region
+
+  lambda_source_dir = "${path.root}/../backend/lambdas/generateQuiz"
+  function_name     = "${var.project_name}-generate-quiz"
+
+  environment_variables = {}
+  s3_bucket_arn         = ""
+  invoke_lambda_name    = ""
 }

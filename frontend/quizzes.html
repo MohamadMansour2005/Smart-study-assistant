@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Study Assistant - Mini Quizzes</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+<nav class="navbar">
+  <a href="./index.html" class="nav-brand">
+    Smart Study Assistant
+  </a>
+
+  <div class="nav-links">
+    <a href="./ai.html">AI Assistance</a>
+    <a href="./flashcards.html">Flashcards</a>
+    <a href="./quizzes.html">Mini Quizzes</a>
+  </div>
+</nav>
+
+  <div class="container">
+    <header class="hero">
+      <h1>Mini Quizzes</h1>
+      <p>Answer the question first, then reveal whether you were correct and why.</p>
+    </header>
+
+    <main class="single-column">
+      <section class="card">
+        <h2>Quiz Question</h2>
+
+        <div id="quizQuestion" class="quiz-box">
+          Quiz question will appear here.
+        </div>
+
+        <div id="quizChoices" class="mcq-options"></div>
+
+        <div class="button-row">
+          <button id="submitQuizBtn" class="btn">Submit Answer</button>
+          <button id="nextQuizBtn" class="btn secondary-btn">Next Question</button>
+        </div>
+
+        <p id="quizStatus" class="status">Quiz page ready.</p>
+      </section>
+
+      <section class="card">
+        <h2>Result</h2>
+        <div id="quizCorrectAnswer" class="output">
+          Your result and explanation will appear here after you submit.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./quizzes.js"></script>
+</body>
+</html>

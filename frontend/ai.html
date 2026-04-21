@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Study Assistant - AI Assistance</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <nav class="navbar">
+  <a href="./index.html" class="nav-brand">
+    Smart Study Assistant
+  </a>
+
+  <div class="nav-links">
+    <a href="./ai.html">AI Assistance</a>
+    <a href="./flashcards.html">Flashcards</a>
+    <a href="./quizzes.html">Mini Quizzes</a>
+  </div>
+</nav>
+  <div class="container">
+    <header class="hero">
+      <h1>AI Assistance</h1>
+      <p>Ask the AI to explain topics, simplify notes, or focus on specific concepts.</p>
+    </header>
+
+    <main class="single-column">
+      <section class="card">
+        <h2>Ask for Help</h2>
+
+        <label for="aiPrompt" class="label">What do you want help with?</label>
+        <textarea
+          id="aiPrompt"
+          class="textarea"
+          placeholder="Example: Explain floating point representation in simple terms."
+        ></textarea>
+
+        <label for="aiContext" class="label">Optional notes or pasted content</label>
+        <textarea
+          id="aiContext"
+          class="textarea large"
+          placeholder="Paste lecture text, notes, or a paragraph here..."
+        ></textarea>
+
+        <button id="aiAskBtn" class="btn">Ask AI</button>
+
+        <p id="aiStatus" class="status">Waiting for your question...</p>
+      </section>
+
+      <section class="card">
+        <h2>AI Response</h2>
+        <div id="aiOutput" class="output">
+          AI response will appear here.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./ai.js"></script>
+</body>
+</html>

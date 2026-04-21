@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Study Assistant - Flashcards</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+<nav class="navbar">
+  <a href="./index.html" class="nav-brand">
+    Smart Study Assistant
+  </a>
+
+  <div class="nav-links">
+    <a href="./ai.html">AI Assistance</a>
+    <a href="./flashcards.html">Flashcards</a>
+    <a href="./quizzes.html">Mini Quizzes</a>
+  </div>
+</nav>
+
+  <div class="container">
+    <header class="hero">
+      <h1>Flashcards</h1>
+      <p>Review key concepts using interactive flashcards.</p>
+    </header>
+
+    <main class="single-column">
+      <section class="card">
+        <h2>Flashcard Viewer</h2>
+
+        <div class="flashcard" id="flashcard">
+          <div id="flashcardFront" class="flashcard-face">
+            Question will appear here.
+          </div>
+          <div id="flashcardBack" class="flashcard-face hidden">
+            Answer will appear here.
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button id="flipCardBtn" class="btn">Show Answer</button>
+          <button id="prevCardBtn" class="btn secondary-btn">Previous</button>
+          <button id="nextCardBtn" class="btn secondary-btn">Next</button>
+        </div>
+
+        <p id="flashcardStatus" class="status">Flashcards page ready.</p>
+      </section>
+    </main>
+  </div>
+
+  <script src="./flashcards.js"></script>
+</body>
+</html>

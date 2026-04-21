@@ -18,3 +18,9 @@ output "results_url" {
 output "summarize_url" {
   value = module.api_gateway.summarize_url
 }
+output "flashcards_url" {
+  value = module.api_gateway.flashcards_url
+}
+output "quiz_url" {
+  value = module.api_gateway.quiz_url
+}

@@ -37,3 +37,7 @@ variable "quiz_lambda_invoke_arn" {
   description = "Invoke ARN for the quiz lambda"
   type        = string
 }
+variable "assist_lambda_invoke_arn" {
+  description = "Invoke ARN for the assist lambda"
+  type        = string
+}

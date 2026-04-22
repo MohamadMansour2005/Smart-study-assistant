@@ -35,3 +35,14 @@ variable "invoke_lambda_name" {
   type        = string
   default     = ""
 }
+variable "dynamodb_table_name" {
+  description = "DynamoDB table name for document storage"
+  type        = string
+  default     = ""
+}
+
+variable "dynamodb_table_arn" {
+  description = "DynamoDB table ARN for document storage"
+  type        = string
+  default     = ""
+}

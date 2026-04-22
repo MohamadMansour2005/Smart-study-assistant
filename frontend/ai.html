@@ -5,57 +5,103 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Smart Study Assistant - AI Assistance</title>
   <link rel="stylesheet" href="./style.css" />
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)'], ['$', '$']],
+        displayMath: [['\\[', '\\]'], ['$$', '$$']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 <body>
   <nav class="navbar">
-  <a href="./index.html" class="nav-brand">
-    Smart Study Assistant
-  </a>
+    <a href="./index.html" class="nav-brand">
+      Smart Study Assistant
+    </a>
 
-  <div class="nav-links">
-    <a href="./ai.html">AI Assistance</a>
-    <a href="./flashcards.html">Flashcards</a>
-    <a href="./quizzes.html">Mini Quizzes</a>
-  </div>
-</nav>
+    <div class="nav-links">
+      <a href="./ai.html" class="active">AI Assistance</a>
+      <a href="./flashcards.html">Flashcards</a>
+      <a href="./quizzes.html">Mini Quizzes</a>
+    </div>
+
+    <div class="nav-auth">
+      <button id="loginBtn" class="btn">Login</button>
+      <button id="logoutBtn" class="btn secondary-btn">Logout</button>
+    </div>
+  </nav>
+
   <div class="container">
     <header class="hero">
       <h1>AI Assistance</h1>
-      <p>Ask the AI to explain topics, simplify notes, or focus on specific concepts.</p>
+      <p>Ask follow-up questions and keep the conversation going.</p>
     </header>
 
     <main class="single-column">
       <section class="card">
-        <h2>Ask for Help</h2>
+        <h2>Chat Controls</h2>
 
-        <label for="aiPrompt" class="label">What do you want help with?</label>
-        <textarea
-          id="aiPrompt"
-          class="textarea"
-          placeholder="Example: Explain floating point representation in simple terms."
-        ></textarea>
+        <label for="assistMode" class="label">Assistance Mode</label>
+        <select id="assistMode" class="select-input">
+          <option value="general">General Explanation</option>
+          <option value="beginner">Beginner-Friendly</option>
+          <option value="formula">Formula Focus</option>
+          <option value="exam">Exam Prep</option>
+          <option value="slides">Slide-by-Slide Notes</option>
+          <option value="custom">Custom</option>
+        </select>
 
-        <label for="aiContext" class="label">Optional notes or pasted content</label>
+        <label for="aiContext" class="label">Optional context</label>
         <textarea
           id="aiContext"
           class="textarea large"
-          placeholder="Paste lecture text, notes, or a paragraph here..."
+          placeholder="Paste lecture text, notes, formulas, or extracted text here..."
         ></textarea>
 
-        <button id="aiAskBtn" class="btn">Ask AI</button>
+        <div class="button-row">
+          <button id="newChatBtn" class="btn secondary-btn">New Chat</button>
+          <button id="clearContextBtn" class="btn secondary-btn">Clear Context</button>
+        </div>
 
-        <p id="aiStatus" class="status">Waiting for your question...</p>
+        <div class="status-row">
+          <div id="aiSpinner" class="spinner hidden"></div>
+          <p id="aiStatus" class="status">Start a conversation.</p>
+        </div>
       </section>
 
       <section class="card">
-        <h2>AI Response</h2>
-        <div id="aiOutput" class="output">
-          AI response will appear here.
+        <h2>Conversation</h2>
+        <div id="chatMessages" class="chat-messages">
+          <div class="chat-empty" id="chatEmpty">
+            No messages yet. Ask your first question below.
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Ask a Question</h2>
+
+        <textarea
+          id="aiPrompt"
+          class="textarea"
+          placeholder="Ask a question, request clarification, or continue the conversation..."
+        ></textarea>
+
+        <div class="button-row">
+          <button id="aiAskBtn" class="btn">Send</button>
         </div>
       </section>
     </main>
   </div>
 
   <script src="./ai.js"></script>
+  <script src="./auth.js"></script>
 </body>
 </html>

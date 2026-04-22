@@ -117,7 +117,12 @@ resource "aws_lambda_function" "this" {
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
 
   environment {
-    variables = var.environment_variables
+    variables = merge(
+      var.environment_variables,
+      var.dynamodb_table_name != "" ? {
+        TABLE_NAME = var.dynamodb_table_name
+      } : {}
+    )
   }
 }
 
@@ -137,4 +142,25 @@ output "lambda_invoke_arn" {
 
 output "lambda_name" {
   value = aws_lambda_function.this.function_name
+}
+resource "aws_iam_role_policy" "dynamodb_access" {
+  count = var.dynamodb_table_arn != "" ? 1 : 0
+
+  name = "${var.function_name}-dynamodb-policy"
+  role = aws_iam_role.lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem",
+          "dynamodb:Query"
+        ],
+        Resource = var.dynamodb_table_arn
+      }
+    ]
+  })
 }

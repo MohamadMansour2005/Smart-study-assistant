@@ -24,3 +24,9 @@ output "flashcards_url" {
 output "quiz_url" {
   value = module.api_gateway.quiz_url
 }
+output "assist_url" {
+  value = module.api_gateway.assist_url
+}
+output "documents_table_name" {
+  value = aws_dynamodb_table.documents.name
+}

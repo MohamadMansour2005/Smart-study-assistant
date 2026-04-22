@@ -1,5 +1,6 @@
 const AWS = require("aws-sdk");
-
+const dynamo = new AWS.DynamoDB.DocumentClient();
+const TABLE_NAME = process.env.TABLE_NAME;
 const textract = new AWS.Textract();
 const lambda = new AWS.Lambda();
 
@@ -78,6 +79,23 @@ text = text
       } else {
         summary = "No body returned from summarize lambda";
       }
+    }
+
+    const userId = "TEMP_USER";
+    const documentId = Date.now().toString();
+
+    if (TABLE_NAME) {
+      await dynamo.put({
+        TableName: TABLE_NAME,
+        Item: {
+          PK: `USER#${userId}`,
+          SK: `DOC#${documentId}`,
+          fileName: "uploaded-document.pdf",
+          text,
+          summary,
+          createdAt: new Date().toISOString()
+        }
+      }).promise();
     }
 return {
   statusCode: 200,

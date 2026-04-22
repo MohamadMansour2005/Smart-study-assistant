@@ -623,3 +623,48 @@ input[type="file"]:hover {
 .card:nth-child(3) { animation-delay: 0.15s; }
 .card:nth-child(4) { animation-delay: 0.20s; }
 .card:nth-child(5) { animation-delay: 0.25s; }
+ .nav-auth {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 220px;
+}
+
+.chat-empty {
+  color: #6b7280;
+}
+
+.chat-bubble {
+  max-width: 85%;
+  padding: 14px 16px;
+  border-radius: 16px;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.chat-user {
+  align-self: flex-end;
+  background: #eadcc8;
+  color: #3a2c1f;
+  border-bottom-right-radius: 6px;
+}
+
+.chat-assistant {
+  align-self: flex-start;
+  background: #f6efe3;
+  color: #3a2c1f;
+  border: 1px solid #eadcc8;
+  border-bottom-left-radius: 6px;
+}
+
+.chat-role {
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  opacity: 0.8;
+}

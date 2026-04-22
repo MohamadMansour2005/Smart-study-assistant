@@ -91,7 +91,8 @@ resource "aws_api_gateway_deployment" "deploy" {
     aws_api_gateway_integration.results_lambda_integration,
     aws_api_gateway_integration.summarize_lambda_integration,
     aws_api_gateway_integration.flashcards_lambda_integration,
-    aws_api_gateway_integration.quiz_lambda_integration
+    aws_api_gateway_integration.quiz_lambda_integration,
+    aws_api_gateway_integration.assist_lambda_integration
   ]
   rest_api_id = aws_api_gateway_rest_api.api.id
 
@@ -118,6 +119,9 @@ resource "aws_api_gateway_deployment" "deploy" {
       quiz_resource_id          = aws_api_gateway_resource.quiz.id
       quiz_method_id            = aws_api_gateway_method.quiz_post.id
       quiz_integration_id       = aws_api_gateway_integration.quiz_lambda_integration.id
+      assist_resource_id        = aws_api_gateway_resource.assist.id
+      assist_method_id          = aws_api_gateway_method.assist_post.id
+      assist_integration_id     = aws_api_gateway_integration.assist_lambda_integration.id
     }))
   }
 
@@ -262,4 +266,33 @@ resource "aws_api_gateway_integration" "quiz_lambda_integration" {
 }
 output "quiz_url" {
   value = "https://${aws_api_gateway_rest_api.api.id}.execute-api.${var.region}.amazonaws.com/dev/quiz"
+}
+# ----------------------
+# /assist
+# ----------------------
+resource "aws_api_gateway_resource" "assist" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
+  path_part   = "assist"
+}
+
+resource "aws_api_gateway_method" "assist_post" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.assist.id
+  http_method   = "POST"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "assist_lambda_integration" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.assist.id
+  http_method = aws_api_gateway_method.assist_post.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+
+  uri = var.assist_lambda_invoke_arn
+}
+output "assist_url" {
+  value = "https://${aws_api_gateway_rest_api.api.id}.execute-api.${var.region}.amazonaws.com/dev/assist"
 }

@@ -23,6 +23,7 @@ module "api_gateway" {
   summarize_lambda_invoke_arn  = module.summarize_document_lambda.lambda_invoke_arn
   flashcards_lambda_invoke_arn = module.generate_flashcards_lambda.lambda_invoke_arn
   quiz_lambda_invoke_arn       = module.generate_quiz_lambda.lambda_invoke_arn
+  assist_lambda_invoke_arn     = module.assist_lambda.lambda_invoke_arn
 }
 data "aws_caller_identity" "current" {}
 
@@ -86,8 +87,10 @@ module "get_results_lambda" {
     SUMMARIZE_FUNCTION_NAME = module.summarize_document_lambda.lambda_name
   }
 
-  s3_bucket_arn      = ""
-  invoke_lambda_name = module.summarize_document_lambda.lambda_name
+  s3_bucket_arn       = ""
+  invoke_lambda_name  = module.summarize_document_lambda.lambda_name
+  dynamodb_table_name = aws_dynamodb_table.documents.name
+  dynamodb_table_arn  = aws_dynamodb_table.documents.arn
 }
 module "generate_flashcards_lambda" {
   source       = "./modules/lambda"
@@ -112,4 +115,32 @@ module "generate_quiz_lambda" {
   environment_variables = {}
   s3_bucket_arn         = ""
   invoke_lambda_name    = ""
+}
+module "assist_lambda" {
+  source       = "./modules/lambda"
+  project_name = "${var.project_name}-assist"
+  region       = var.region
+
+  lambda_source_dir = "${path.root}/../backend/lambdas/assist"
+  function_name     = "${var.project_name}-assist"
+
+  environment_variables = {}
+  s3_bucket_arn         = ""
+  invoke_lambda_name    = ""
+}
+resource "aws_dynamodb_table" "documents" {
+  name         = "${var.project_name}-documents"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "PK"
+  range_key    = "SK"
+
+  attribute {
+    name = "PK"
+    type = "S"
+  }
+
+  attribute {
+    name = "SK"
+    type = "S"
+  }
 }
